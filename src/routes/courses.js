@@ -1,6 +1,7 @@
 const express = require("express");
 const Course = require("../models/Course");
 const verifyToken = require("../middlewares/auth");
+const mongoose = require("mongoose");
 
 const courseRouter = express.Router();
 
@@ -32,6 +33,41 @@ courseRouter.post("/", verifyToken, async (req, res) => {
       });
    } catch (error) {
       console.error("Error creating a course:", error);
+      res.status(500).json({ message: "Internal Server Error" });
+   }
+});
+
+// Enroll Student
+courseRouter.post("/:courseId/enroll", verifyToken, async (req, res) => {
+   try {
+      // Check if authenticator is a student
+      if (req.user.role !== "student")
+         return res
+            .status(403)
+            .json({ message: "Only students can enroll in courses" });
+
+      // Validate courseID = MongoDB objectId format
+      if (!mongoose.Types.ObjectId.isValid(req.params.courseId))
+         return res.status(400).json({ message: "Invalid ID format" });
+
+      const course = await Course.findById(req.params.courseId);
+      if (!course)
+         return res.status(404).json({ message: "Course Not Found!" });
+
+      if (course.students.includes(req.user.id))
+         return res
+            .status(400)
+            .json({ message: "Already enroll to this course" });
+
+      course.students.push(req.user.id);
+      await course.save();
+
+      res.status(201).json({
+         message: "Enrolled successfully",
+         course: course,
+      });
+   } catch (error) {
+      console.error("Error enrolling student:", error);
       res.status(500).json({ message: "Internal Server Error" });
    }
 });
