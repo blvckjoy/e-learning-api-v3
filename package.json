@@ -1,0 +1,30 @@
+{
+   "name": "e-learning",
+   "version": "1.0.0",
+   "description": "",
+   "main": "index.js",
+   "scripts": {
+      "start": "nodemon server.js"
+   },
+   "repository": {
+      "type": "git",
+      "url": "git+https://github.com/blvckjoy/e-learning.git"
+   },
+   "keywords": [],
+   "author": "",
+   "license": "ISC",
+   "bugs": {
+      "url": "https://github.com/blvckjoy/e-learning/issues"
+   },
+   "homepage": "https://github.com/blvckjoy/e-learning#readme",
+   "dependencies": {
+      "bcrypt": "^5.1.1",
+      "dotenv": "^16.5.0",
+      "express": "^5.1.0",
+      "jsonwebtoken": "^9.0.2",
+      "mongoose": "^8.13.2"
+   },
+   "devDependencies": {
+      "nodemon": "^3.1.9"
+   }
+}
