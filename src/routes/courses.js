@@ -37,10 +37,9 @@ courseRouter.post("/", verifyToken, async (req, res) => {
    }
 });
 
-// Enroll Student
+// Enroll Student (Only student)
 courseRouter.post("/:courseId/enroll", verifyToken, async (req, res) => {
    try {
-      // Check if authenticator is a student
       if (req.user.role !== "student")
          return res
             .status(403)
@@ -57,7 +56,7 @@ courseRouter.post("/:courseId/enroll", verifyToken, async (req, res) => {
       if (course.students.includes(req.user.id))
          return res
             .status(400)
-            .json({ message: "Already enroll to this course" });
+            .json({ message: "Already enrolled to this course" });
 
       course.students.push(req.user.id);
       await course.save();
@@ -96,7 +95,7 @@ courseRouter.patch("/:courseId", verifyToken, async (req, res) => {
    });
 });
 
-// Delete course (only instructor)
+// Delete course (Only instructor)
 courseRouter.delete("/:courseId", verifyToken, async (req, res) => {
    try {
       if (req.user.role !== "instructor")
@@ -155,7 +154,7 @@ courseRouter.patch(
             status: status,
          });
       } catch (error) {
-         console.error("Error update student status:", error);
+         console.error("Error updating student status:", error);
          res.status(500).json({ message: "Internal Server Error" });
       }
    }
