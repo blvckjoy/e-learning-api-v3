@@ -96,4 +96,25 @@ courseRouter.patch("/:courseId", verifyToken, async (req, res) => {
    });
 });
 
+// Delete course (only instructor)
+courseRouter.delete("/:courseId", verifyToken, async (req, res) => {
+   try {
+      if (req.user.role !== "instructor")
+         return res.status(403).json({ message: "Forbidden" });
+
+      if (!mongoose.Types.ObjectId.isValid(req.params.courseId))
+         return res.status(400).json({ message: "Invalid ID format" });
+
+      const course = await Course.findById(req.params.courseId);
+      if (!course) return res.status(404).json({ message: "Course Not Found" });
+
+      await Course.findByIdAndDelete(req.params.courseId);
+
+      res.status(200).json({ message: "Course deleted successfully" });
+   } catch (error) {
+      console.error("Error deleting course:", error);
+      res.status(500).json({ message: "Internal Server Error" });
+   }
+});
+
 module.exports = courseRouter;
