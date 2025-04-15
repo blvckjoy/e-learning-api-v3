@@ -1,6 +1,6 @@
 const express = require("express");
 const Course = require("../models/Course");
-const verifyToken = require("../middlewares/auth");
+const authMiddleware = require("../middlewares/auth");
 const mongoose = require("mongoose");
 
 const courseRouter = express.Router();
@@ -12,7 +12,7 @@ courseRouter.get("/", async (req, res) => {
 });
 
 // Create Course (Only instructor)
-courseRouter.post("/", verifyToken, async (req, res) => {
+courseRouter.post("/", authMiddleware, async (req, res) => {
    try {
       if (req.user.role !== "instructor")
          return res.status(403).json({ message: "Forbidden" });
@@ -38,7 +38,7 @@ courseRouter.post("/", verifyToken, async (req, res) => {
 });
 
 // Enroll Student (Only student)
-courseRouter.post("/:courseId/enroll", verifyToken, async (req, res) => {
+courseRouter.post("/:courseId/enroll", authMiddleware, async (req, res) => {
    try {
       if (req.user.role !== "student")
          return res
@@ -72,7 +72,7 @@ courseRouter.post("/:courseId/enroll", verifyToken, async (req, res) => {
 });
 
 // Update course (Only instructor)
-courseRouter.patch("/:courseId", verifyToken, async (req, res) => {
+courseRouter.patch("/:courseId", authMiddleware, async (req, res) => {
    if (req.user.role !== "instructor")
       return res.status(403).json({ message: "Forbidden" });
 
@@ -96,7 +96,7 @@ courseRouter.patch("/:courseId", verifyToken, async (req, res) => {
 });
 
 // Delete course (Only instructor)
-courseRouter.delete("/:courseId", verifyToken, async (req, res) => {
+courseRouter.delete("/:courseId", authMiddleware, async (req, res) => {
    try {
       if (req.user.role !== "instructor")
          return res.status(403).json({ message: "Forbidden" });
@@ -116,54 +116,10 @@ courseRouter.delete("/:courseId", verifyToken, async (req, res) => {
    }
 });
 
-// Update student status (Only instructor)
-courseRouter.patch(
-   "/:courseId/students/:studentId",
-   verifyToken,
-   async (req, res) => {
-      try {
-         if (req.user.role !== "instructor")
-            return res.status(403).json({ message: "Forbidden" });
-
-         const course = await Course.findById(req.params.courseId);
-         if (!course)
-            return res.status(404).json({ message: "Course Not Found" });
-
-         if (
-            !mongoose.Types.ObjectId.isValid(req.params.courseId) ||
-            !mongoose.Types.ObjectId.isValid(req.params.studentId)
-         )
-            return res.status(400).json({ message: "Invalid ID format" });
-
-         if (!course.students.includes(req.params.studentId))
-            return res
-               .status(400)
-               .json({ message: "Student is not enrolled to this course" });
-
-         const { status } = req.body;
-         if (!status)
-            return res.status(400).json({ message: "Status is required" });
-
-         // Create a student status object if there is none
-         if (!course.studentStatus) course.studentStatus = {};
-         course.studentStatus[req.params.studentId] = status;
-         await course.save();
-
-         res.status(200).json({
-            message: "Student status successfully updated",
-            status: status,
-         });
-      } catch (error) {
-         console.error("Error updating student status:", error);
-         res.status(500).json({ message: "Internal Server Error" });
-      }
-   }
-);
-
 // Remove student from a course
 courseRouter.delete(
    "/:courseId/students/:studentId",
-   verifyToken,
+   authMiddleware,
    async (req, res) => {
       try {
          if (req.user.role !== "instructor")
