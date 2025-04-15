@@ -11,7 +11,7 @@ app.use(express.json());
 const authRouter = require("./src/routes/auth");
 const courseRouter = require("./src/routes/courses");
 
-app.use("/users", authRouter);
-app.use("/courses", courseRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/courses", courseRouter);
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
