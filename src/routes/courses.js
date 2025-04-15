@@ -122,7 +122,7 @@ courseRouter.delete(
    authMiddleware,
    async (req, res) => {
       try {
-         if (req.user.role !== "instructor")
+         if (req.user.role !== "instructor" || req.user.role !== "student")
             return res.status(403).json({ message: "Forbidden" });
 
          const course = await Course.findById(req.params.courseId);
