@@ -117,4 +117,48 @@ courseRouter.delete("/:courseId", verifyToken, async (req, res) => {
    }
 });
 
+// Update student status (Only instructor)
+courseRouter.patch(
+   "/:courseId/students/:studentId",
+   verifyToken,
+   async (req, res) => {
+      try {
+         if (req.user.role !== "instructor")
+            return res.status(403).json({ message: "Forbidden" });
+
+         const course = await Course.findById(req.params.courseId);
+         if (!course)
+            return res.status(404).json({ message: "Course Not Found" });
+
+         if (
+            !mongoose.Types.ObjectId.isValid(req.params.courseId) ||
+            !mongoose.Types.ObjectId.isValid(req.params.studentId)
+         )
+            return res.status(400).json({ message: "Invalid ID format" });
+
+         if (!course.students.includes(req.params.studentId))
+            return res
+               .status(400)
+               .json({ message: "Student is not enrolled to this course" });
+
+         const { status } = req.body;
+         if (!status)
+            return res.status(400).json({ message: "Status is required" });
+
+         // Create a student status object if there is none
+         if (!course.studentStatus) course.studentStatus = {};
+         course.studentStatus[req.params.studentId] = status;
+         await course.save();
+
+         res.status(200).json({
+            message: "Student status successfully updated",
+            status: status,
+         });
+      } catch (error) {
+         console.error("Error update student status:", error);
+         res.status(500).json({ message: "Internal Server Error" });
+      }
+   }
+);
+
 module.exports = courseRouter;
