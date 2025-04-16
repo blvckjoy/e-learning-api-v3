@@ -9,6 +9,7 @@ A robust RESTful API for an e-learning platform that enables course management, 
 -  [API Documentation](#api-documentation)
 -  [Authentication](#authentication)
 -  [Error Handling](#error-handling)
+-  [Deployment](#deployment)
 
 ## Features
 
@@ -265,6 +266,10 @@ Common status codes:
 -  403: Forbidden
 -  404: Not Found
 -  500: Internal Server Error
+
+## Deployment
+
+-  This API is deployed on Render at https://e-learning-4s7o.onrender.com
 
 ## Acknowledgments
 
