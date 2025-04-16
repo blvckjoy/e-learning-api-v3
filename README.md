@@ -267,6 +267,15 @@ Common status codes:
 -  404: Not Found
 -  500: Internal Server Error
 
+## Postman Documentation
+
+-  Link: https://documenter.getpostman.com/view/32577214/2sB2cbbKK5
+-  Variables:
+   -  {{baseUrl}}: Change it to your API URL or http://localhost:3002
+   -  {{authToken}}: Change after successful login.
+   -  {{courseId}}: Change to a valid course ID.
+   -  {{studentId}}: Change to a valid student ID.
+
 ## Deployment
 
 -  This API is deployed on Render at https://e-learning-4s7o.onrender.com
