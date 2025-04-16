@@ -171,6 +171,14 @@ Request Body:
 }
 ```
 
+Response:
+
+```json
+{
+   "message": "Course created successfully"
+}
+```
+
 #### Update Course (Instructor Only)
 
 ```http
@@ -186,13 +194,21 @@ Request Body:
 }
 ```
 
+Response:
+
+```json
+{
+   "message": "Course updated successfully"
+}
+```
+
 #### Delete Course (Instructor Only)
 
 ```http
 DELETE /api/courses/:courseId
 ```
 
-Request Body:
+Response:
 
 ```json
 {
@@ -208,12 +224,11 @@ Request Body:
 POST /api/courses/:courseId/enroll
 ```
 
-Request Body:
+Response:
 
 ```json
 {
-   "message": "Enrolled successfully",
-   "course": "course"
+   "message": "Enrolled successfully"
 }
 ```
 
@@ -223,7 +238,7 @@ Request Body:
 DELETE /api/courses/:courseId/students/:studentId
 ```
 
-Request Body:
+Response:
 
 ```json
 {
