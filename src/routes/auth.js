@@ -2,6 +2,7 @@ const express = require("express");
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { validateUser } = require("../validators/userValidation");
 
 const authRouter = express.Router();
 
@@ -14,6 +15,9 @@ authRouter.get("/", async (req, res) => {
 // Sign Up
 authRouter.post("/signup", async (req, res) => {
    try {
+      const { error } = validateUser(req.body);
+      if (error) return res.status(400).send(error.details[0].message);
+
       const { name, email, password, role } = req.body;
       let user = await User.findOne({ email });
       if (user) return res.status(400).json({ message: "User already exists" });
