@@ -1,5 +1,5 @@
 {
-   "name": "e-learning",
+   "name": "e-learning-api",
    "version": "1.0.0",
    "description": "",
    "main": "index.js",
@@ -8,15 +8,15 @@
    },
    "repository": {
       "type": "git",
-      "url": "git+https://github.com/blvckjoy/e-learning.git"
+      "url": "git+https://github.com/blvckjoy/e-learning-api.git"
    },
    "keywords": [],
    "author": "",
    "license": "ISC",
    "bugs": {
-      "url": "https://github.com/blvckjoy/e-learning/issues"
+      "url": "https://github.com/blvckjoy/e-learning-api/issues"
    },
-   "homepage": "https://github.com/blvckjoy/e-learning#readme",
+   "homepage": "https://github.com/blvckjoy/e-learning-api#readme",
    "dependencies": {
       "bcrypt": "^5.1.1",
       "dotenv": "^16.5.0",
