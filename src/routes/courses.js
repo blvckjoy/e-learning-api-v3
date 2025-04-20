@@ -86,6 +86,12 @@ courseRouter.patch(
       const course = await Course.findById(req.params.courseId);
       if (!course) return res.status(404).json({ message: "Course Not Found" });
 
+      // Ensure the logged-in instructor owns the course
+      if (course.instructor.toString() !== req.user.id)
+         return res
+            .status(403)
+            .json({ message: "Forbidden: You do not own this course" });
+
       const { title, description, duration, price } = req.body;
       const updatedCourse = await Course.findByIdAndUpdate(
          req.params.courseId,
@@ -113,6 +119,12 @@ courseRouter.delete(
          const course = await Course.findById(req.params.courseId);
          if (!course)
             return res.status(404).json({ message: "Course Not Found" });
+
+         // Ensure the logged-in instructor owns the course
+         if (course.instructor.toString() !== req.user.id)
+            return res
+               .status(403)
+               .json({ message: "Forbidden: You do not own this course" });
 
          await Course.findByIdAndDelete(req.params.courseId);
 
