@@ -41,83 +41,88 @@ courseRouter.post(
 );
 
 // Enroll Student (Only student)
-courseRouter.post("/:courseId/enroll", authMiddleware, async (req, res) => {
-   try {
-      if (req.user.role !== "student")
-         return res
-            .status(403)
-            .json({ message: "Only students can enroll in courses" });
+courseRouter.post(
+   "/:courseId/enroll",
+   authMiddleware,
+   authRole("student"),
+   async (req, res) => {
+      try {
+         // Validate courseID = MongoDB objectId format
+         if (!mongoose.Types.ObjectId.isValid(req.params.courseId))
+            return res.status(400).json({ message: "Invalid ID format" });
 
-      // Validate courseID = MongoDB objectId format
-      if (!mongoose.Types.ObjectId.isValid(req.params.courseId))
-         return res.status(400).json({ message: "Invalid ID format" });
+         const course = await Course.findById(req.params.courseId);
+         if (!course)
+            return res.status(404).json({ message: "Course Not Found!" });
 
-      const course = await Course.findById(req.params.courseId);
-      if (!course)
-         return res.status(404).json({ message: "Course Not Found!" });
+         if (course.students.includes(req.user.id))
+            return res
+               .status(400)
+               .json({ message: "Already enrolled to this course" });
 
-      if (course.students.includes(req.user.id))
-         return res
-            .status(400)
-            .json({ message: "Already enrolled to this course" });
+         course.students.push(req.user.id);
+         await course.save();
 
-      course.students.push(req.user.id);
-      await course.save();
-
-      res.status(201).json({
-         message: "Enrolled successfully",
-         course: course,
-      });
-   } catch (error) {
-      console.error("Error enrolling student:", error);
-      res.status(500).json({ message: "Internal Server Error" });
+         res.status(201).json({
+            message: "Enrolled successfully",
+            course: course,
+         });
+      } catch (error) {
+         console.error("Error enrolling student:", error);
+         res.status(500).json({ message: "Internal Server Error" });
+      }
    }
-});
+);
 
 // Update course (Only instructor)
-courseRouter.patch("/:courseId", authMiddleware, async (req, res) => {
-   if (req.user.role !== "instructor")
-      return res.status(403).json({ message: "Forbidden" });
-
-   if (!mongoose.Types.ObjectId.isValid(req.params.courseId))
-      return res.status(400).json({ message: "Invalid ID format" });
-
-   const course = await Course.findById(req.params.courseId);
-   if (!course) return res.status(404).json({ message: "Course Not Found" });
-
-   const { title, description, duration, price } = req.body;
-   const updatedCourse = await Course.findByIdAndUpdate(
-      req.params.courseId,
-      { ...req.body },
-      { new: true }
-   );
-
-   res.status(200).json({
-      message: "Course updated successfully",
-      course: updatedCourse,
-   });
-});
-
-// Delete course (Only instructor)
-courseRouter.delete("/:courseId", authMiddleware, async (req, res) => {
-   try {
-      if (req.user.role !== "instructor")
-         return res.status(403).json({ message: "Forbidden" });
-
+courseRouter.patch(
+   "/:courseId",
+   authMiddleware,
+   authRole("instructor"),
+   async (req, res) => {
       if (!mongoose.Types.ObjectId.isValid(req.params.courseId))
          return res.status(400).json({ message: "Invalid ID format" });
 
       const course = await Course.findById(req.params.courseId);
       if (!course) return res.status(404).json({ message: "Course Not Found" });
 
-      await Course.findByIdAndDelete(req.params.courseId);
+      const { title, description, duration, price } = req.body;
+      const updatedCourse = await Course.findByIdAndUpdate(
+         req.params.courseId,
+         { ...req.body },
+         { new: true }
+      );
 
-      res.status(200).json({ message: "Course deleted successfully" });
-   } catch (error) {
-      console.error("Error deleting course:", error);
-      res.status(500).json({ message: "Internal Server Error" });
+      res.status(200).json({
+         message: "Course updated successfully",
+         course: updatedCourse,
+      });
    }
-});
+);
+
+// Delete course (Only instructor)
+courseRouter.delete(
+   "/:courseId",
+   authMiddleware,
+   authRole("instructor"),
+   async (req, res) => {
+      try {
+         if (!mongoose.Types.ObjectId.isValid(req.params.courseId))
+            return res.status(400).json({ message: "Invalid ID format" });
+
+         const course = await Course.findById(req.params.courseId);
+         if (!course)
+            return res.status(404).json({ message: "Course Not Found" });
+
+         await Course.findByIdAndDelete(req.params.courseId);
+
+         res.status(200).json({ message: "Course deleted successfully" });
+      } catch (error) {
+         console.error("Error deleting course:", error);
+         res.status(500).json({ message: "Internal Server Error" });
+      }
+   }
+);
 
 // Remove student from a course
 courseRouter.delete(
