@@ -1,6 +1,7 @@
 const express = require("express");
 const Course = require("../models/Course");
 const authMiddleware = require("../middlewares/auth");
+const { authRole } = require("../middlewares/authRole");
 const mongoose = require("mongoose");
 
 const courseRouter = express.Router();
@@ -12,30 +13,32 @@ courseRouter.get("/", async (req, res) => {
 });
 
 // Create Course (Only instructor)
-courseRouter.post("/", authMiddleware, async (req, res) => {
-   try {
-      if (req.user.role !== "instructor")
-         return res.status(403).json({ message: "Forbidden" });
+courseRouter.post(
+   "/",
+   authMiddleware,
+   authRole("instructor"),
+   async (req, res) => {
+      try {
+         const { title, description, duration, price } = req.body;
+         const course = new Course({
+            title,
+            description,
+            duration,
+            price,
+            instructor: req.user.id,
+         });
+         await course.save();
 
-      const { title, description, duration, price } = req.body;
-      const course = new Course({
-         title,
-         description,
-         duration,
-         price,
-         instructor: req.user.id,
-      });
-      await course.save();
-
-      res.status(201).json({
-         message: "Course created successfully",
-         course: course,
-      });
-   } catch (error) {
-      console.error("Error creating a course:", error);
-      res.status(500).json({ message: "Internal Server Error" });
+         res.status(201).json({
+            message: "Course created successfully",
+            course: course,
+         });
+      } catch (error) {
+         console.error("Error creating a course:", error);
+         res.status(500).json({ message: "Internal Server Error" });
+      }
    }
-});
+);
 
 // Enroll Student (Only student)
 courseRouter.post("/:courseId/enroll", authMiddleware, async (req, res) => {
