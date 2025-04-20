@@ -3,14 +3,21 @@ const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { validateUser } = require("../validators/userValidation");
+const authMiddleware = require("../middlewares/auth");
+const { authRole } = require("../middlewares/authRole");
 
 const authRouter = express.Router();
 
 // Get all users
-authRouter.get("/", async (req, res) => {
-   const users = await User.find();
-   res.json(users);
-});
+authRouter.get(
+   "/",
+   authMiddleware,
+   authRole("instructor"),
+   async (req, res) => {
+      const users = await User.find();
+      res.json(users);
+   }
+);
 
 // Sign Up
 authRouter.post("/signup", async (req, res) => {
