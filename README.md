@@ -233,20 +233,6 @@ Response:
 }
 ```
 
-#### Remove Student from Course (Instructor and Student)
-
-```http
-DELETE /api/courses/:courseId/students/:studentId
-```
-
-Response:
-
-```json
-{
-   "message": "Student removed successfully"
-}
-```
-
 ## Error Handling
 
 The API uses standard HTTP status codes and returns JSON error responses:
