@@ -257,7 +257,7 @@ Common status codes:
 
 -  Link: https://documenter.getpostman.com/view/32577214/2sB2cbbKK5
 -  Variables:
-   -  {{baseUrl}}: Change it to your API URL or http://localhost:3002
+   -  {{baseUrl}}: Change it to your API URL or http://localhost:3000
    -  {{authToken}}: Change after successful login.
    -  {{courseId}}: Change to a valid course ID.
    -  {{studentId}}: Change to a valid student ID.
