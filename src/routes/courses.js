@@ -8,7 +8,7 @@ const courseRouter = express.Router();
 
 // Get all courses
 courseRouter.get("/", async (req, res) => {
-   const courses = await Course.find();
+   const courses = await Course.find().populate("instructor", "name");
    res.json(courses);
 });
 
