@@ -160,4 +160,43 @@ authRouter.post("/reset-password/:resetToken", async (req, res) => {
    }
 });
 
+// Change password
+authRouter.post("/change-password", authMiddleware, async (req, res) => {
+   try {
+      const { currentPassword, newPassword } = req.body;
+      const user = await User.findById(req.user.id);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isMatch)
+         return res
+            .status(400)
+            .json({ message: "Current password is incorrect" });
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      // Bypassing the pre("save") hook from rehashing an already-hashed password
+      await User.updateOne(
+         { _id: req.user.id },
+         { $set: { password: hashedPassword } }
+      );
+
+      // Send a confirmation email
+      const currentTime = format(new Date(), "MMMM, d, yyyy, h:mm a");
+      const message =
+         `Hello ${user.name || "there"},\n\n` +
+         `Your password was successfully changed on ${currentTime}.\n` +
+         `If you did not initiate this change, please contact us on support@email.com.\n\n` +
+         `Best regards,\nThe Team`;
+      await sendEmail(user.email, "Password Change Confirmation", message);
+
+      res.status(200).json({
+         message: "Password has been changed successfully",
+      });
+   } catch (error) {
+      console.error("Change password error:", error);
+      res.status(500).json({ message: "Internal Server Error" });
+   }
+});
+
 module.exports = authRouter;
