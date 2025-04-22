@@ -2,6 +2,7 @@ const express = require("express");
 const Course = require("../models/Course");
 const authMiddleware = require("../middlewares/auth");
 const { authRole } = require("../middlewares/authRole");
+const { sendEmail } = require("../utils/sendEmail");
 const mongoose = require("mongoose");
 
 const courseRouter = express.Router();
@@ -67,6 +68,12 @@ courseRouter.post(
             message: "Enrolled successfully",
             course: course,
          });
+
+         await sendEmail(
+            req.user.email,
+            "Enrollment confirmation!",
+            "Thank you for enrolling to this course. Let's start learning"
+         );
       } catch (error) {
          console.error("Error enrolling student:", error);
          res.status(500).json({ message: "Internal Server Error" });

@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const { validateUser } = require("../validators/userValidation");
 const authMiddleware = require("../middlewares/auth");
 const { authRole } = require("../middlewares/authRole");
+const { sendEmail } = require("../utils/sendEmail");
 
 const authRouter = express.Router();
 
@@ -36,6 +37,19 @@ authRouter.post("/signup", async (req, res) => {
          message: "User created successfully",
          user: user,
       });
+
+      if (user.role === "instructor")
+         sendEmail(
+            user.email,
+            `Welcome ${user.name}`,
+            "Your instructor account has been created successfully"
+         );
+      else if (user.role === "student")
+         sendEmail(
+            user.email,
+            `Welcome ${user.name}`,
+            "Your student account has been created successfully"
+         );
    } catch (error) {
       console.error("Error creating a new user:", error);
       res.status(500).json({ message: "Internal Server Error" });
