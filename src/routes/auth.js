@@ -7,6 +7,7 @@ const authMiddleware = require("../middlewares/auth");
 const { authRole } = require("../middlewares/authRole");
 const { sendEmail } = require("../utils/sendEmail");
 const crypto = require("crypto");
+const { format } = require("path");
 require("dotenv").config();
 
 const authRouter = express.Router();
@@ -115,6 +116,47 @@ authRouter.post("/forgot-password", async (req, res) => {
    } catch (error) {
       console.error("Forgot password error", error);
       res.status(500).json({ message: "Failed to send reset email" });
+   }
+});
+
+// Reset password
+authRouter.post("/reset-password/:resetToken", async (req, res) => {
+   try {
+      const { resetToken } = req.params;
+      const { newPassword } = req.body;
+
+      // Find user with a valid, non-expired reset token
+      const user = await User.findOne({
+         resetPasswordToken: resetToken,
+         resetPasswordExpiry: { $gt: Date.now() },
+      });
+      if (!user)
+         return res.status(400).json({ message: "Invalid or expired token" });
+
+      // Check if the token has expired
+      if (user.resetPasswordExpiry < Date.now())
+         return res.status(400).json({ message: "Token has expired" });
+
+      // Update password with a hashed password for security and clear reset fields
+      user.password = await bcrypt.hash(newPassword, 10);
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpiry = undefined;
+      await user.save();
+
+      // Send a confirmation email
+      const currentTime = format(new Date(), "MMMM, d, yyyy, h:mm a"); // e.g., "April 22, 2025, 10:30 AM"
+      const message =
+         `Hello ${user.name || "there"},\n\n` +
+         `Your password was successfully reset on ${currentTime}.\n` +
+         `If you did not initiate this change, please contact us on support@email.com.\n\n` +
+         `Best regards,\nThe Team`;
+
+      await sendEmail(user.email, "Password Reset Confirmation", message);
+
+      res.status(200).json({ message: "Password has been reset successfully" });
+   } catch (error) {
+      console.error("Reset password error:", error);
+      res.status(500).json({ message: "Internal Server Error" });
    }
 });
 
