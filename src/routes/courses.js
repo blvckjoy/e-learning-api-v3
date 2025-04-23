@@ -4,6 +4,9 @@ const authMiddleware = require("../middlewares/auth");
 const { authRole } = require("../middlewares/authRole");
 const { sendEmail } = require("../utils/sendEmail");
 const mongoose = require("mongoose");
+const cloudinary = require("../config/cloudinary");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const multer = require("multer");
 
 const courseRouter = express.Router();
 
@@ -140,6 +143,36 @@ courseRouter.delete(
          console.error("Error deleting course:", error);
          res.status(500).json({ message: "Internal Server Error" });
       }
+   }
+);
+
+const storage = new CloudinaryStorage({
+   cloudinary: cloudinary,
+   params: {
+      folder: "course-media",
+      format: ["png", "mp4", "pdf", "jpg"],
+   },
+});
+
+const upload = multer({
+   storage: storage,
+   limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5MB
+});
+
+// Upload course media (Only instructor)
+courseRouter.post(
+   "/:courseId/upload",
+   authMiddleware,
+   authRole("instructor"),
+   upload.single("media"),
+   async (req, res) => {
+      if (!req.file)
+         return res.status(400).json({ message: "No file uploaded" });
+
+      res.json({
+         message: "Media file uploaded successfully",
+         file: req.file,
+      });
    }
 );
 
