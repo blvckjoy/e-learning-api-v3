@@ -176,4 +176,37 @@ courseRouter.post(
    }
 );
 
+// Course Analytics (Only instructor)
+courseRouter.get(
+   "/analytics",
+   authMiddleware,
+   authRole("instructor"),
+   async (req, res) => {
+      try {
+         const totalCourses = await Course.countDocuments();
+         const totalEnrollments = await Course.aggregate([
+            {
+               $unwind: "$students",
+            },
+            {
+               $group: {
+                  _id: "null",
+                  total: { $sum: 1 },
+               },
+            },
+         ]);
+
+         res.json({
+            totalCourses,
+            totalEnrollments: totalEnrollments[0]
+               ? totalEnrollments[0].total
+               : 0,
+         });
+      } catch (error) {
+         console.error("Analytic Error:", error);
+         res.status(500).json({ message: "Internal Server Error" });
+      }
+   }
+);
+
 module.exports = courseRouter;
