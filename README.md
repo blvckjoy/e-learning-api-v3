@@ -1,4 +1,4 @@
-# E-Learning Platform API
+# E-Learning Platform API V2
 
 A robust RESTful API for an e-learning platform that enables course management, student enrollment, and progress tracking. Built with Node.js, Express, and MongoDB.
 
@@ -33,6 +33,7 @@ A robust RESTful API for an e-learning platform that enables course management, 
    -  Course analytics and tracking
 
 -  **Student Management**
+
    -  Student enrollment
    -  Course removal
    -  Progress tracking
@@ -224,6 +225,73 @@ Response:
 }
 ```
 
+#### Forget Password
+
+```http
+POST /api/auth/forget-password
+```
+
+Request Body:
+
+```json
+{
+   "email": "john@example.com"
+}
+```
+
+Response:
+
+```json
+{
+   "message": "Password reset email has been sent"
+}
+```
+
+#### Reset Password
+
+```http
+POST /api/auth/reset-password/resetToken
+```
+
+Request Body:
+
+```json
+{
+   "email": "john@example.com"
+}
+```
+
+Response:
+
+```json
+{
+   "message": "Password has been reset successfully"
+}
+```
+
+#### Change Password
+
+```http
+POST /api/auth/change-password
+```
+
+Request Body:
+
+```json
+{
+   "currentPassword": "securePassword123",
+   "newPassword": "newSecurePassword456"
+}
+```
+
+Response:
+
+```json
+{
+   "message": "Password has been changed successfully"
+}
+```
+
 ### Error Responses
 
 #### Authentication Errors
@@ -405,7 +473,7 @@ Common status codes:
 
 ## Deployment
 
--  This API is deployed on Render at https://e-learning-4s7o.onrender.com
+-  This API is deployed on Render at https://e-learning-api-v2.onrender.com
 
 ## Acknowledgments
 
