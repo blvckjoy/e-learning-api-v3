@@ -6,8 +6,13 @@ A robust RESTful API for an e-learning platform that enables course management, 
 
 -  [Features](#features)
 -  [Installation](#installation)
+-  [Environment Variables](#environment-variables)
+-  [Email Functionality](#email-functionality)
+-  [Course Media Upload](#course-media-upload)
+-  [Analytics](#analytics)
 -  [API Documentation](#api-documentation)
 -  [Authentication](#authentication)
+-  [Third-Party Integration](#third-party-integration)
 -  [Error Handling](#error-handling)
 -  [Deployment](#deployment)
 
@@ -18,15 +23,19 @@ A robust RESTful API for an e-learning platform that enables course management, 
    -  Role-based access control (Student, Instructor)
    -  JWT and Bcrypt authentication
    -  Secure password handling
+   -  Email notifications for account actions
 
 -  **Course Management**
 
    -  Create, read, update, and delete courses
    -  Course enrollment system
+   -  Media upload support (images, videos, documents)
+   -  Course analytics and tracking
 
 -  **Student Management**
    -  Student enrollment
    -  Course removal
+   -  Progress tracking
 
 ## Installation
 
@@ -43,19 +52,113 @@ cd e-learning
 npm install
 ```
 
-3. Create a `.env` file in the root directory and add your environment variables:
-
-```env
-PORT=3000
-MONGODB_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
-```
-
-4. Start the development server:
+3. Start the development server:
 
 ```bash
 npm run dev
 ```
+
+## Environment Variables
+
+Create a `.env` file in the root directory with the following variables:
+
+```env
+# Server Configuration
+PORT=3000
+MONGODB_URI=your_mongodb_connection_string
+ACCESS_TOKEN_SECRET=your_jwt_secret
+
+# Email Configuration
+EMAIL_USERNAME=your_email@gmail.com
+EMAIL_PASSWORD=your_app_specific_password
+APP_URL=http://localhost:3000
+
+# Cloudinary Configuration
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+```
+
+## Email Functionality
+
+The platform uses Nodemailer for sending automated emails. The following features are supported:
+
+### Email Notifications
+
+1. **Account Creation**
+
+   -  Welcome emails for new students and instructors
+   -  Customized messages based on user role
+
+2. **Password Management**
+
+   -  Password reset requests
+   -  Password change confirmations
+   -  Security notifications
+
+3. **Course Updates**
+   -  Enrollment confirmations
+   -  Course completion notifications
+   -  Important announcements
+
+### Email Configuration
+
+The email service is configured using Gmail SMTP. To set up:
+
+1. Enable 2-factor authentication in your Gmail account
+2. Generate an App Password
+3. Add the credentials to your `.env` file
+
+## Course Media Upload
+
+The platform supports media uploads using Cloudinary and Multer:
+
+### Supported Media Types
+
+-  Images (JPG, PNG, GIF)
+-  Videos (MP4)
+-  Documents (PDF, DOC, DOCX)
+
+### Upload Configuration
+
+1. **Cloudinary Setup**
+
+   -  Create a Cloudinary account
+   -  Configure cloud name, API key, and secret
+   -  Add credentials to `.env` file
+
+2. **Upload Limits**
+   -  Maximum file size: 5MB
+
+### Usage Example
+
+```javascript
+const upload = multer({
+   storage: new CloudinaryStorage({
+      cloudinary: cloudinary,
+      params: {
+         folder: "course-media",
+      },
+   }),
+});
+
+// Use in route
+router.post("/upload", upload.single("media"), async (req, res) => {
+   // Handle upload
+});
+```
+
+## Analytics
+
+The platform includes built-in analytics features:
+
+### User Analytics
+
+-  Active user tracking
+
+### Course Analytics
+
+-  Enrollment statistics
 
 ## API Documentation
 
@@ -151,6 +254,7 @@ Authorization: Bearer <your_jwt_token>
 
 ```http
 GET /api/courses
+Authorization: Bearer <instructor-jwt-token>
 ```
 
 Returns a list of all available courses.
@@ -159,6 +263,7 @@ Returns a list of all available courses.
 
 ```http
 POST /api/courses
+Authorization: Bearer <instructor-jwt-token>
 ```
 
 Request Body:
@@ -184,6 +289,7 @@ Response:
 
 ```http
 PATCH /api/courses/:courseId
+Authorization: Bearer <instructor-jwt-token>
 ```
 
 Request Body:
@@ -207,6 +313,7 @@ Response:
 
 ```http
 DELETE /api/courses/:courseId
+Authorization: Bearer <instructor-jwt-token>
 ```
 
 Response:
@@ -223,6 +330,7 @@ Response:
 
 ```http
 POST /api/courses/:courseId/enroll
+Authorization: Bearer <student-jwt-token>
 ```
 
 Response:
@@ -230,6 +338,39 @@ Response:
 ```json
 {
    "message": "Enrolled successfully"
+}
+```
+
+## Third-Party Integration
+
+### Course Media Upload (Instructor only)
+
+```http
+POST /api/courses/courseId/upload
+Authorization: Bearer <instructor-jwt-token>
+```
+
+Response:
+
+```json
+{
+   "message": "Media file uploaded successfully"
+}
+```
+
+### Analytics
+
+```http
+GET /api/courses/analytics/summary
+Authorization: Bearer <instructor-jwt-token>
+```
+
+Response:
+
+```json
+{
+   "totalCourses": 1,
+   "totalEnrollments": 3
 }
 ```
 
