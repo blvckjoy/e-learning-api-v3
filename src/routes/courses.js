@@ -178,7 +178,7 @@ courseRouter.post(
 
 // Course Analytics (Only instructor)
 courseRouter.get(
-   "/analytics",
+   "/analytics/summary",
    authMiddleware,
    authRole("instructor"),
    async (req, res) => {
