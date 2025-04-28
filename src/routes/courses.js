@@ -24,7 +24,11 @@ courseRouter.post(
    async (req, res) => {
       try {
          const { title, description, duration, price } = req.body;
-         const course = new Course({
+
+         let course = await Course.findOne({ title });
+         if (course)
+            return res.status(400).json({ message: "Course already exists" });
+         course = new Course({
             title,
             description,
             duration,
