@@ -1,36 +1,36 @@
 {
-   "name": "e-learning-api-v2",
-   "version": "1.0.0",
-   "description": "A robust RESTful API for an e-learning platform that enables course management, student enrollment, and progress tracking. Built with Node.js, Express, and MongoDB.",
-   "main": "server.js",
-   "dependencies": {
-      "bcrypt": "^5.1.1",
-      "cloudinary": "^1.21.0",
-      "crypto-js": "^4.2.0",
-      "dotenv": "^16.5.0",
-      "express": "^5.1.0",
-      "joi": "^17.13.3",
-      "jsonwebtoken": "^9.0.2",
-      "mongoose": "^8.13.2",
-      "multer": "^1.4.5-lts.2",
-      "multer-storage-cloudinary": "^4.0.0",
-      "nodemailer": "^6.10.1"
-   },
-   "devDependencies": {
-      "nodemon": "^3.1.10"
-   },
-   "scripts": {
-      "start": "nodemon server.js"
-   },
-   "repository": {
-      "type": "git",
-      "url": "git+https://github.com/blvckjoy/e-learning-api-v2.git"
-   },
-   "keywords": [],
-   "author": "",
-   "license": "ISC",
-   "bugs": {
-      "url": "https://github.com/blvckjoy/e-learning-api-v2/issues"
-   },
-   "homepage": "https://github.com/blvckjoy/e-learning-api-v2#readme"
+  "name": "e-learning-api-v3",
+  "version": "1.0.0",
+  "description": "A robust RESTful API for an e-learning platform that enables course management, student enrollment, and progress tracking. Built with Node.js, Express, and MongoDB.",
+  "main": "server.js",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cloudinary": "^1.21.0",
+    "crypto-js": "^4.2.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.13.2",
+    "multer": "^1.4.5-lts.2",
+    "multer-storage-cloudinary": "^4.0.0",
+    "nodemailer": "^6.10.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  },
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blvckjoy/e-learning-api-v3.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/blvckjoy/e-learning-api-v3/issues"
+  },
+  "homepage": "https://github.com/blvckjoy/e-learning-api-v3#readme"
 }
